@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'model/counter.dart';
+
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -22,8 +24,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  void _incrementCounter() => setState(() => _counter++);
+  final Counter counter = Counter();
+  void _incrementCounter() => setState(() => counter.increment());
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -34,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               const Text('You have pushed the button this many times:'),
               Text(
-                '$_counter',
+                '${counter.count}',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
             ],

@@ -9,13 +9,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(primarySwatch: Colors.blue),
-        home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        home: const MyHomePage(),
       );
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -27,7 +26,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text(widget.title)),
+        appBar: AppBar(title: const Text('Counter App')),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -37,10 +36,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 '$_counter',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
+              FloatingActionButton(
+                onPressed: () {},
+                tooltip: 'Increment',
+                child: const Icon(Icons.add),
+              ),
             ],
           ),
         ),
         floatingActionButton: FloatingActionButton(
+          key: const Key('increment'),
           onPressed: _incrementCounter,
           tooltip: 'Increment',
           child: const Icon(Icons.add),

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tests_practice/repository/user_repo.dart';
+
+import 'model/user.dart';
 
 void main() => runApp(const MyApp());
 
@@ -9,41 +12,44 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(primarySwatch: Colors.blue),
-        home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        home: HomePage(users: UserRepoSitory().getUser()),
       );
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+class HomePage extends StatefulWidget {
+  const HomePage({super.key, required this.users});
+  final Future<List<User>> users;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  void _incrementCounter() => setState(() => _counter++);
+class _HomePageState extends State<HomePage> {
+  final UserRepoSitory userRepoSitory = UserRepoSitory();
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text(widget.title)),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text('You have pushed the button this many times:'),
-              Text(
-                '$_counter',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _incrementCounter,
-          tooltip: 'Increment',
-          child: const Icon(Icons.add),
-        ),
-      );
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Users')),
+      body: FutureBuilder(
+        future: widget.users,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final List<User>? users = snapshot.data;
+            return ListView.builder(
+              itemCount: users!.length,
+              itemBuilder: (context, index) {
+                final User user = users[index];
+                return ListTile(
+                    title: Text(user.name), subtitle: Text(user.email));
+              },
+            );
+          } else if (snapshot.hasError) {
+            return const Center(child: Text('Error'));
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
+    );
+  }
 }

@@ -9,41 +9,63 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(primarySwatch: Colors.blue),
-        home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        home: const AnimatedScreen(),
       );
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+class AnimatedScreen extends StatefulWidget {
+  const AnimatedScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<AnimatedScreen> createState() => _AnimatedScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  void _incrementCounter() => setState(() => _counter++);
+class _AnimatedScreenState extends State<AnimatedScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _widthAnimation;
+  late Animation<Color?> _colorAnimation;
+  late Animation<double> _borderRadiusAnimation;
+
+  @override
+  void initState() {
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2));
+
+    _widthAnimation = Tween<double>(begin: 50, end: 200)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _colorAnimation = ColorTween(begin: Colors.red, end: Colors.blue).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.easeInCubic));
+
+    _borderRadiusAnimation = Tween<double>(begin: 0, end: 100)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _controller.forward();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text(widget.title)),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text('You have pushed the button this many times:'),
-              Text(
-                '$_counter',
-                style: Theme.of(context).textTheme.headlineMedium,
+        body: AnimatedBuilder(
+          animation: _controller,
+          builder: (BuildContext context, Widget? child) => Center(
+            child: Container(
+              width: _widthAnimation.value,
+              height: _widthAnimation.value,
+              decoration: BoxDecoration(
+                color: _colorAnimation.value,
+                borderRadius:
+                    BorderRadius.circular(_borderRadiusAnimation.value),
               ),
-            ],
+            ),
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _incrementCounter,
-          tooltip: 'Increment',
-          child: const Icon(Icons.add),
         ),
       );
 }
